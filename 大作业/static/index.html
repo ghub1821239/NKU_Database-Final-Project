@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet System</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <section id="login-view" class="login-layout">
+      <div class="login-panel">
+        <p class="section-label">PET MANAGEMENT SYSTEM</p>
+        <h1>登录你的宠物管理账号</h1>
+        <p class="lead">
+          使用主人账号和密码登录。
+        </p>
+        <form id="login-form" class="login-form">
+          <label>
+            <span>主人账号</span>
+            <input id="login-owner-id" type="text" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="例如 00001" required>
+          </label>
+          <label>
+            <span>密码</span>
+            <input id="login-password" type="password" placeholder="请输入密码" required>
+          </label>
+          <button type="submit" class="btn btn-primary">登录</button>
+          <p id="login-message" class="login-message">尚未登录</p>
+        </form>
+      </div>
+      <div class="login-side">
+        <div class="login-side-block">
+          <p class="section-label">Scope</p>
+          <ul>
+            <li>查看本人账号信息</li>
+            <li>查看本人全部宠物</li>
+            <li>查看本人食品 / 药物库存</li>
+            <li>查看并执行本人喂药计划</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="app-view" class="workspace hidden">
+      <aside class="sidebar">
+        <div class="sidebar-block">
+          <p class="section-label">ACCOUNT</p>
+          <h2 id="sidebar-owner-name">未登录</h2>
+          <p id="sidebar-owner-code" class="muted">00000</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-link" data-target="section-profile">账号信息</button>
+          <button class="nav-link" data-target="section-owner-edit">修改主人信息</button>
+          <button class="nav-link" data-target="section-pets">宠物</button>
+          <button class="nav-link" data-target="section-pet-edit">修改宠物信息</button>
+          <button class="nav-link" data-target="section-food">食品库存</button>
+          <button class="nav-link" data-target="section-food-feed">食品喂食</button>
+          <button class="nav-link" data-target="section-medicine">药物库存</button>
+          <button class="nav-link" data-target="section-plans">喂药计划</button>
+          <button class="nav-link" data-target="section-store-edit">库存维护</button>
+        </nav>
+
+        <div class="sidebar-block sidebar-actions">
+          <button id="refresh-all" class="btn btn-secondary">刷新全部</button>
+          <button id="logout-btn" class="btn btn-dark">退出登录</button>
+        </div>
+      </aside>
+
+      <main class="main-column">
+        <header class="top-header">
+          <div>
+            <p class="section-label">DASHBOARD</p>
+            <h1>个人宠物管理台</h1>
+          </div>
+          <div class="status-inline">
+            <span id="status-pill" class="status-pill">等待加载</span>
+          </div>
+        </header>
+
+        <section id="section-profile" class="content-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">PROFILE</p>
+              <h3>本人信息</h3>
+            </div>
+          </div>
+          <div id="owner-detail" class="plain-panel empty-panel">登录后加载</div>
+        </section>
+
+        <section id="section-owner-edit" class="content-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">OWNER EDIT</p>
+              <h3>修改主人信息</h3>
+            </div>
+          </div>
+          <div class="form-grid two-col">
+            <form id="owner-edit-form" class="editor-form">
+              <label><span>昵称</span><input id="owner-edit-nickname" type="text"></label>
+              <label><span>手机号</span><input id="owner-edit-phone" type="text" maxlength="11"></label>
+              <label><span>生日</span><input id="owner-edit-birthday" type="date"></label>
+              <label>
+                <span>性别</span>
+                <select id="owner-edit-sex">
+                  <option value="">未填写</option>
+                  <option value="男">男</option>
+                  <option value="女">女</option>
+                </select>
+              </label>
+              <label class="full-span"><span>地址</span><input id="owner-edit-address" type="text"></label>
+              <button type="submit" class="btn btn-primary">保存主人信息</button>
+            </form>
+
+            <form id="password-form" class="editor-form">
+              <label><span>旧密码</span><input id="old-password" type="password" required></label>
+              <label><span>新密码</span><input id="new-password" type="password" required></label>
+              <div class="form-note">修改密码时必须输入旧密码。</div>
+              <button type="submit" class="btn btn-dark">修改密码</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="section-pets" class="content-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">PETS</p>
+              <h3>我的宠物</h3>
+            </div>
+            <div class="section-actions">
+              <button id="clear-plan-filter" class="btn btn-ghost">查看全部计划</button>
+              <button id="load-pets" class="btn btn-secondary">刷新宠物</button>
+            </div>
+          </div>
+          <div id="pets-grid" class="list-panel empty-panel">登录后加载</div>
+        </section>
+
+        <section id="section-pet-edit" class="content-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">PET EDIT</p>
+              <h3>修改宠物信息</h3>
+            </div>
+          </div>
+          <form id="pet-edit-form" class="editor-form form-grid two-col">
+            <label>
+              <span>选择宠物</span>
+              <select id="pet-edit-id"></select>
+            </label>
+            <label>
+              <span>宠物姓名</span>
+              <input id="pet-edit-name" type="text">
+            </label>
+            <label>
+              <span>性别</span>
+              <select id="pet-edit-sex">
+                <option value="">未填写</option>
+                <option value="男">男</option>
+                <option value="女">女</option>
+              </select>
+            </label>
+            <label>
+              <span>出生日期</span>
+              <input id="pet-edit-birthday" type="date">
+            </label>
+            <label>
+              <span>种类</span>
+              <select id="pet-edit-category">
+                <option value="猫">猫</option>
+                <option value="狗">狗</option>
+              </select>
+            </label>
+            <div id="pet-extra-fields" class="form-grid two-col full-span"></div>
+            <button type="submit" class="btn btn-primary">保存宠物信息</button>
+          </form>
+        </section>
+
+        <section id="section-food" class="content-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">FOOD STORE</p>
+              <h3>食品库存</h3>
+            </div>
+            <button id="load-food-store" class="btn btn-secondary">刷新食品</button>
+          </div>
+          <div id="food-store-table" class="table-panel empty-panel">登录后加载</div>
+        </section>
+
+        <section id="section-food-feed" class="content-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">FOOD FEED</p>
+              <h3>食品喂食</h3>
+            </div>
+          </div>
+          <form id="food-feed-form" class="editor-form form-grid three-col">
+            <label>
+              <span>宠物</span>
+              <select id="feed-pet-id"></select>
+            </label>
+            <label>
+              <span>食品</span>
+              <select id="feed-food-id"></select>
+            </label>
+            <label>
+              <span>喂食量</span>
+              <input id="feed-amount" type="number" min="1" value="1">
+            </label>
+            <button type="submit" class="btn btn-primary">执行喂食</button>
+          </form>
+        </section>
+
+        <section id="section-medicine" class="content-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">MEDICINE STORE</p>
+              <h3>药物库存</h3>
+            </div>
+            <button id="load-medicine-store" class="btn btn-secondary">刷新药物</button>
+          </div>
+          <div id="medicine-store-table" class="table-panel empty-panel">登录后加载</div>
+        </section>
+
+        <section id="section-plans" class="content-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">MEDICINE PLANS</p>
+              <h3>喂药计划</h3>
+              <p id="plan-scope" class="scope-note">当前显示：全部宠物</p>
+            </div>
+            <button id="load-plans" class="btn btn-secondary">刷新计划</button>
+          </div>
+          <div id="plans-table" class="table-panel empty-panel">先选择一只宠物，或查看全部计划</div>
+        </section>
+
+        <section id="section-store-edit" class="content-section">
+          <div class="section-head">
+            <div>
+              <p class="section-label">STORE EDIT</p>
+              <h3>库存新增与修改</h3>
+            </div>
+          </div>
+          <div class="form-grid two-col">
+            <form id="food-create-form" class="editor-form">
+              <h4>新增食品库存</h4>
+              <label><span>食品字典</span><select id="food-create-id"></select></label>
+              <label><span>批次号</span><input id="food-create-batch" type="number" min="1"></label>
+              <label><span>过期日期</span><input id="food-create-expire" type="date"></label>
+              <label><span>剩余量</span><input id="food-create-amount" type="number" min="1"></label>
+              <button type="submit" class="btn btn-primary">新增食品库存</button>
+            </form>
+
+            <form id="food-update-form" class="editor-form">
+              <h4>修改食品库存</h4>
+              <label><span>选择库存</span><select id="food-update-key"></select></label>
+              <label><span>过期日期</span><input id="food-update-expire" type="date"></label>
+              <label><span>剩余量</span><input id="food-update-amount" type="number" min="1"></label>
+              <button type="submit" class="btn btn-secondary">更新食品库存</button>
+            </form>
+
+            <form id="medicine-create-form" class="editor-form">
+              <h4>新增药物库存</h4>
+              <label><span>药物字典</span><select id="medicine-create-id"></select></label>
+              <label><span>批次号</span><input id="medicine-create-batch" type="number" min="1"></label>
+              <label><span>过期日期</span><input id="medicine-create-expire" type="date"></label>
+              <label><span>剩余量</span><input id="medicine-create-amount" type="number" min="1"></label>
+              <button type="submit" class="btn btn-primary">新增药物库存</button>
+            </form>
+
+            <form id="medicine-update-form" class="editor-form">
+              <h4>修改药物库存</h4>
+              <label><span>选择库存</span><select id="medicine-update-key"></select></label>
+              <label><span>过期日期</span><input id="medicine-update-expire" type="date"></label>
+              <label><span>剩余量</span><input id="medicine-update-amount" type="number" min="1"></label>
+              <button type="submit" class="btn btn-secondary">更新药物库存</button>
+            </form>
+          </div>
+        </section>
+      </main>
+
+      <aside class="rightbar">
+        <section class="right-section">
+          <div class="section-head compact">
+            <div>
+              <p class="section-label">FILTERS</p>
+              <h3>筛选条件</h3>
+            </div>
+          </div>
+          <div class="filter-stack">
+            <label>
+              <span>食品截止日期</span>
+              <input id="food-expire-before" type="date" value="2026-12-31">
+            </label>
+            <label>
+              <span>药物截止日期</span>
+              <input id="medicine-expire-before" type="date" value="2026-12-31">
+            </label>
+            <label>
+              <span>计划截止时间</span>
+              <input id="plans-before-time" type="datetime-local" value="2026-06-30T23:59">
+            </label>
+          </div>
+        </section>
+
+        <section class="right-section">
+          <div class="section-head compact">
+            <div>
+              <p class="section-label">ALERTS</p>
+              <h3>过期提醒</h3>
+            </div>
+          </div>
+          <div id="alerts-box" class="alerts-box empty-panel">登录后加载</div>
+        </section>
+      </aside>
+    </section>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

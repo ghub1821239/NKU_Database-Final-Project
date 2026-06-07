@@ -1,0 +1,740 @@
+% !TEX program = xelatex
+\documentclass[12pt,a4paper,fontset=none]{ctexart}
+
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.18cm,right=3.18cm]{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{setspace}
+\usepackage{tabularx}
+\usepackage{xcolor}
+
+\setmainfont{Times New Roman}
+\setCJKmainfont{Songti SC}
+\setCJKsansfont{Heiti SC}
+\setCJKmonofont{Songti SC}
+\setlength{\headheight}{15pt}
+\setstretch{1.25}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{数据库系统}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.18em}
+\renewcommand{\arraystretch}{1.14}
+\linespread{1.08}
+\setlength{\tabcolsep}{5.5pt}
+
+\definecolor{tableline}{HTML}{BFBFBF}
+\definecolor{codebg}{HTML}{F7F7F7}
+\definecolor{codeframe}{HTML}{D9D9D9}
+\definecolor{codekw}{HTML}{1F4E79}
+\definecolor{codestr}{HTML}{A31515}
+\definecolor{codecom}{HTML}{6A737D}
+\definecolor{codenum}{HTML}{8A8A8A}
+
+\lstdefinelanguage{bash}{
+    morekeywords={cd,ls,pwd,mkdir,rm,cp,mv,cat,echo,source,pip,mysql,python3},
+    sensitive=true,
+    morecomment=[l]{\#},
+    morestring=[b]',
+    morestring=[b]"
+}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    columns=fullflexible,
+    frame=single,
+    showstringspaces=false,
+    backgroundcolor=\color{codebg},
+    rulecolor=\color{codeframe},
+    keywordstyle=\color{codekw}\bfseries,
+    stringstyle=\color{codestr},
+    commentstyle=\color{codecom}\itshape,
+    numbers=left,
+    numberstyle=\tiny\color{codenum},
+    numbersep=8pt,
+    xleftmargin=1.2em,
+    framexleftmargin=1em,
+    framesep=6pt,
+    tabsize=4,
+    keepspaces=true,
+    captionpos=b
+}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\newcommand{\ulineblank}[1]{\underline{\hspace{#1}}}
+\newcommand{\blankrow}{\rule{0pt}{1.8em}}
+\newcommand{\tabletitle}[1]{\vspace{0.5em}{\underline{\textbf{#1}}}\par\vspace{0.3em}}
+\newcommand{\smallgap}{\vspace{0.5em}}
+\newcommand{\cellbox}[1]{\begin{minipage}[t]{\linewidth}\vspace{0pt}#1\end{minipage}}
+\newcommand{\reportsection}[1]{\clearpage\addcontentsline{toc}{section}{#1}\tabletitle{#1}}
+\newcommand{\assetplaceholder}[3][0.18\textheight]{
+    \IfFileExists{#2}{
+        \begin{minipage}[t]{\linewidth}
+            \centering
+            \includegraphics[width=0.92\linewidth,height=#1,keepaspectratio]{#2}\par
+            \vspace{0.3em}
+            {\small #3}
+        \end{minipage}
+    }{
+        \begin{minipage}[t]{\linewidth}
+            \centering
+            \fcolorbox{tableline}{white}{
+                \parbox[c][#1][c]{0.86\linewidth}{
+                    \centering
+                    \small 截图占位\\[0.2em]
+                    {\ttfamily\tiny \detokenize{#2}}
+                }
+            }\par
+            \vspace{0.3em}
+            {\small #3}
+        \end{minipage}
+    }
+}
+\newcommand{\makecover}{
+    \begin{titlepage}
+        \centering
+        \vspace*{1.5cm}
+        \includegraphics[width=0.35\textwidth]{/Users/jiaoyukun/Desktop/大学/大二/大二上/史纲/南开校徽.png}
+
+        \vspace{1.2cm}
+        {\zihao{1}\bfseries 数据库工程作业\par}
+        \vspace{0.6cm}
+        {\zihao{2}\bfseries 宠物信息管理系统\par}
+
+        \vspace{4cm}
+        \renewcommand{\arraystretch}{1.6}
+        \begin{tabular}{rl}
+            \zihao{4} 专\qquad 业：& \underline{\makebox[7cm][c]{计算机科学与技术 }}\\
+            \zihao{4} 学\qquad 号：& \underline{\makebox[7cm][c]{}}\\
+            \zihao{4} 班\qquad 号：& \underline{\makebox[7cm][c]{0999}}\\
+            \zihao{4} 姓\qquad 名：& \underline{\makebox[7cm][c]{}}
+        \end{tabular}
+        \renewcommand{\arraystretch}{1}
+
+        \vfill
+        {\zihao{4} \today\par}
+    \end{titlepage}
+}
+
+\begin{document}
+
+\zihao{5}
+
+\makecover
+\pagenumbering{Roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\section{项目概况（10分）}
+
+\subsection{基本信息}
+本项目名称为“宠物信息管理系统”，面向宠物主人场景组织主人、宠物、食品库存、药品库存与喂药计划等核心数据。
+
+\subsection{系统主要功能简介（4分）}
+系统完成的核心功能可以概括为以下五类：
+\begin{enumerate}
+    \item 账号登录与本人信息查看。用户通过主人编号和密码登录，登录后只能访问与自己相关的数据。
+    \item 宠物信息管理。系统可以查看主人名下全部宠物，并支持修改宠物基础信息；当宠物类别在“猫”和“狗”之间切换时，后端会同步维护子表数据。
+    \item 食品与药品库存管理。系统记录不同批次的库存数量、过期时间和厂商信息，支持查询、录入和更新。
+    \item 喂药计划管理。系统可以查看不同宠物的喂药计划，并通过存储过程执行计划、减少对应药品批次库存。
+    \item 操作日志与约束控制。数据库层利用触发器、存储过程和日志过程记录关键操作，并把核心业务约束尽量下沉到数据库内部。
+\end{enumerate}
+
+\subsection{系统主要页面截图（6分）}
+
+\begin{tabularx}{\linewidth}{XX}
+\assetplaceholder{assets/page-login.png}{图 1 登录页}
+&
+\assetplaceholder{assets/page-profile-pets.png}{图 2 主人信息与宠物列表页}
+\end{tabularx}
+
+\smallgap
+\begin{tabularx}{\linewidth}{XX}
+\assetplaceholder{assets/page-medicine-store.png}{图 3  食物\&药物页}
+&
+\assetplaceholder{assets/page-plans.png}{图 4 喂药计划页}
+\end{tabularx}
+
+\section{系统配置（10分）}
+
+\subsection{评分点对应}
+本节对应作业要求中的两部分内容：一是说明系统配置情况，占 2 分；二是说明如何通过连接串或连接参数让高级语言连接数据库，并分析连接项的作用，占 8 分。
+
+\subsection{配置环境说明（2分）}
+ 在我的大作业中，后台数据库采用 MySQL，应用层使用 Python 语言，Web 框架为 Flask，数据库驱动为 PyMySQL，通过浏览器访问 Flask 提供的接口和静态页面，属于 B/S 架构。为了保证运行环境独立，项目先在本地创建虚拟环境，再安装依赖并启动应用。具体步骤如下：
+
+\begin{lstlisting}[language=bash, caption={Python 后端环境配置与启动命令}]
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python3 -m py_compile app.py db.py config.py
+DB_PASSWORD='password' DB_NAME='pet' python3 app.py
+\end{lstlisting}
+ 
+
+\subsection{数据库连接方式与连接参数分析（8分）}
+应用层没有把连接参数直接写死在业务代码中，而是由 \texttt{config.py} 统一读取环境变量，再由 \texttt{db.py} 中的 \texttt{create\_connection()} 调用 PyMySQL 建立连接。这样做的好处是切换数据库账号、端口和密码时不需要修改业务逻辑。
+
+{\scriptsize
+\begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}p{0.9cm}|>{\centering\arraybackslash}p{1.7cm}|Y|>{\centering\arraybackslash}p{2.5cm}|}
+\hline
+序号 & 名称 & 功能说明 & 默认值\\
+\hline
+1 & \texttt{host} & 指定数据库服务器地址，决定当前应用要连接哪一台 MySQL 主机。 & \texttt{127.0.0.1} \\
+\hline
+2 & \texttt{port} & 指定数据库监听端口，用于连接本地 MySQL 服务。 & \texttt{3306} \\
+\hline
+3 & \texttt{user} & 指定连接数据库所使用的账号。 & \texttt{root} \\
+\hline
+4 & \texttt{password} & 指定数据库账号口令，用于身份认证。 & 环境变量 \texttt{DB\_PASSWORD} \\
+\hline
+5 & \texttt{database} & 指定连接成功后默认进入的数据库。 & \texttt{pet} \\
+\hline
+6 & \texttt{charset} & 指定字符集，保证中文昵称、地址和说明等内容能够正确存取。 & \texttt{utf8mb4} \\
+\hline
+7 & \texttt{autocommit} & 关闭自动提交，由程序在关键操作后显式执行 \texttt{commit} 或 \texttt{rollback}。 & \texttt{False} \\
+\hline
+\end{tabularx}
+}
+
+连接代码如下所示：
+\begin{lstlisting}[language=python]
+def create_connection():
+    return pymysql.connect(
+        host=Config.DB_HOST,
+        port=Config.DB_PORT,
+        user=Config.DB_USER,
+        password=Config.DB_PASSWORD,
+        database=Config.DB_NAME,
+        charset="utf8mb4",
+        cursorclass=DictCursor,
+        autocommit=False,
+    )
+\end{lstlisting}
+
+\assetplaceholder{assets/conn-string-code.png}{图 5 \texttt{config.py} 与 \texttt{db.py} 中的数据库连接代码截图}
+
+\section{数据库设计（14分）}
+
+\subsection{评分点对应}
+本节对应作业要求中的两部分内容：一是按建表顺序给出数据表、主键、参照属性和被参照属性，占 10 分；二是给出关系图，占 4 分。为了更完整地体现本项目工作量，除列出全部业务表外，还把辅助日志表一并纳入说明。
+
+\subsection{总体设计思路}
+数据库的核心功能如下：
+\begin{enumerate}
+    \item \texttt{owner\_table} 记录主人信息；
+    \item \texttt{pet} 记录宠物主表信息，\texttt{cat} 和 \texttt{dog} 分别补充两类宠物的特有属性；
+    \item \texttt{food}、\texttt{medicine} 与各自的库存表负责管理用品和药品；
+    \item \texttt{medicine\_plan} 记录喂药计划，是触发器、视图和存储过程的重要交汇点；
+    \item \texttt{operation\_log} 负责记录增删改查日志，便于演示与追踪。
+\end{enumerate}
+
+\subsection{数据表创建顺序与参照关系（10分）}
+{\scriptsize
+\begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}p{0.6cm}|>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{3.5cm}|Y|}
+\hline
+顺序 & 数据表名称 & 主键 & 参照属性 & 被参照表及属性 \\
+\hline
+1 & \texttt{owner\_table} & \texttt{owner\_id} & 无 & 无 \\
+\hline
+2 & \texttt{food\_manu} & \texttt{food\_manu\_id} & 无 & 无 \\
+\hline
+3 & \texttt{food} & \texttt{food\_id} & \shortstack[l]{(\texttt{food\_manu\_id})} & \shortstack[l]{\texttt{food\_manu(}\\\texttt{food\_manu\_id)}} \\
+\hline
+4 & \texttt{food\_store} & \shortstack[l]{(\texttt{owner\_id},\\\texttt{food\_id},\\\texttt{food\_store\_batch\_no})} & \shortstack[l]{(\texttt{owner\_id}),\\(\texttt{food\_id})} & \shortstack[l]{\texttt{owner\_table(owner\_id)}；\\\texttt{food(food\_id)}} \\
+\hline
+5 & \shortstack[l]{\texttt{medicine\_}\\\texttt{manu}} & \shortstack[l]{\texttt{medicine\_}\\\texttt{manu\_id}} & 无 & 无 \\
+\hline
+6 & \texttt{medicine} & \texttt{medicine\_id} & \shortstack[l]{(\texttt{medicine\_manu\_id})} & \shortstack[l]{\texttt{medicine\_manu(}\\\texttt{medicine\_manu\_id)}} \\
+\hline
+7 & \shortstack[l]{\texttt{medicine\_}\\\texttt{store}} & \shortstack[l]{(\texttt{owner\_id},\\\texttt{medicine\_id},\\\texttt{medicine\_batch\_no})} & \shortstack[l]{(\texttt{owner\_id}),\\(\texttt{medicine\_id})} & \shortstack[l]{\texttt{owner\_table(owner\_id)}；\\\texttt{medicine(medicine\_id)}} \\
+\hline
+8 & \texttt{pet} & \texttt{pet\_id} & (\texttt{owner\_id}) & \texttt{owner\_table(owner\_id)} \\
+\hline
+9 & \shortstack[l]{\texttt{medicine\_}\\\texttt{plan}} & \texttt{plan\_id} & \shortstack[l]{(\texttt{medicine\_id}),\\(\texttt{pet\_id})} & \shortstack[l]{\texttt{medicine(medicine\_id)}；\\\texttt{pet(pet\_id)}} \\
+\hline
+10 & \texttt{cat} & \texttt{pet\_id} & (\texttt{pet\_id}) & \texttt{pet(pet\_id)} \\
+\hline
+11 & \texttt{dog} & \texttt{pet\_id} & (\texttt{pet\_id}) & \texttt{pet(pet\_id)} \\
+\hline
+12 & \shortstack[l]{\texttt{operation\_}\\\texttt{log}} & \texttt{log\_id} & 无 & 无 \\
+\hline
+\end{tabularx}
+}
+
+\subsection{代表性设计说明}
+\subsubsection{主人、宠物与猫狗子表}
+\texttt{owner\_table} 是整个系统的上游主实体，用来保存主人的基础信息，例如编号、昵称、联系方式、地址、生日和登录密码等内容。
+\texttt{pet} 则作为宠物主表，保存宠物编号、所属主人编号、姓名、生日、性别和类别等通用属性，并通过 \texttt{owner\_id} 与 \texttt{owner\_table} 建立一对多关系，表示一个主人可以拥有多只宠物。
+\texttt{cat} 和 \texttt{dog} 作为宠物子表，分别补充剪爪周期、常用猫砂、遛狗需求等级、犬证号等专有字段。这样设计的好处是：一方面保留了统一的宠物主表，便于按宠物这一对象统一查询；另一方面避免把猫狗特有字段全部堆在同一张表中，减少空值字段并保持结构清晰。
+
+\subsubsection{库存表的复合主键设计}
+\texttt{food\_store} 和 \texttt{medicine\_store} 都采用“主人编号 + 用品编号 + 批次号”的复合主键。这样可以在同一主人、同一商品下记录多个批次，从而支持过期时间筛选、先进先出和批次级库存扣减等后续逻辑。
+
+\subsubsection{计划与日志对象}
+\texttt{medicine\_plan} 同时连接宠物和药品，是触发器、视图和存储过程集中作用的一张表
+
+\texttt{operation\_log} 则服务于所有增删改查操作，用于记录数据库层和应用层行为。
+
+\subsection{关系图（4分）}
+\assetplaceholder[0.42\textheight]{assets/navicat-er.png}{图 6 数据库关系图截图}
+
+\section{含有事务应用的删除操作（13分）}
+
+\subsection{评分点对应}
+本节按要求覆盖以下内容：功能描述 1 分，涉及的关系表 2 分，连接字段 1 分，删除条件字段 1 分，关键代码 4 分，程序演示 4 分。为了体现工作量，本节不只写一个删除瞬间，而是选取两个类别切换场景，说明删除逻辑如何在事务中与更新、插入共同完成。
+
+\subsection{选取的代表场景}
+本系统中最能体现删除操作与事务配合的 地方是在宠物类别变更逻辑中。用户修改宠物类别时，如果原来是狗、现在改成猫，则需要删除 \texttt{dog} 子表中的旧记录并写入 \texttt{cat} 子表；反之亦然。这里的删除不是孤立行为，而是为了保证主表 \texttt{pet} 与子表结构保持一致，因此适合作为事务删除的代表事件。
+
+\subsection{功能描述（1分）}
+该操作所要完成的功能是：当用户修改某只宠物的类别时，系统在一次事务中同步更新宠物主表，并删除旧类别子表中的无效记录，再插入新类别子表记录，从而保证同一只宠物不会同时出现在 \texttt{cat} 和 \texttt{dog} 两张子表中。
+
+\subsection{涉及的表、连接字段与删除条件（4分）}
+\textbf{涉及的关系表：} 本操作直接涉及 \texttt{pet}、\texttt{cat}、\texttt{dog} 三张表。其中 \texttt{pet} 是宠物主表，负责保存宠物的类别与归属主人；\texttt{cat} 和 \texttt{dog} 是两张子表，分别保存猫类和狗类宠物的专有属性。删除动作虽然发生在子表上，但删除依据来自主表中的宠物编号、主人编号以及变更后的宠物类别。
+
+\textbf{表连接字段：}
+\begin{enumerate}
+    \item \texttt{pet.pet\_id = cat.pet\_id}，用于把猫类扩展信息与宠物主表记录关联起来。
+    \item \texttt{pet.pet\_id = dog.pet\_id}，用于把狗类扩展信息与宠物主表记录关联起来。
+\end{enumerate}
+
+\textbf{删除条件字段描述：} 该功能在执行删除前，必须先确认当前登录主人是否拥有这只宠物，随后再根据类别变化决定删除哪一张子表中的旧记录，因此可以归纳为以下三类条件：
+\begin{enumerate}
+    \item \texttt{pet.pet\_id = ? AND pet.owner\_id = ?}：先定位当前主人名下要修改的目标宠物，防止越权修改。
+    \item \texttt{dog.pet\_id = ?}：当原宠物类别为狗、修改后类别为猫时，删除 \texttt{dog} 表中的旧子类记录。
+    \item \texttt{cat.pet\_id = ?}：当原宠物类别为猫、修改后类别为狗时，删除 \texttt{cat} 表中的旧子类记录。
+\end{enumerate}
+
+\subsection{代表事件 A：狗类宠物改为猫类宠物}
+当某只宠物原来属于狗类，而用户把类别改成猫类时，后端先更新 \texttt{pet} 主表中的 \texttt{pet\_category}，随后删除 \texttt{dog} 表中的旧记录，再补写 \texttt{cat} 表中的新记录。其核心删除语句如下：
+\begin{verbatim}
+DELETE FROM dog WHERE pet_id = %s
+\end{verbatim}
+
+\subsection{代表事件 B：猫类宠物改为狗类宠物}
+反向切换时，逻辑完全对称：先更新 \texttt{pet} 主表，再删除 \texttt{cat} 表中的旧记录，并插入 \texttt{dog} 表。对应的删除语句为：
+\begin{verbatim}
+DELETE FROM cat WHERE pet_id = %s
+\end{verbatim}、
+
+\subsection{事务边界与关键代码（4分）}
+应用层连接使用 \texttt{autocommit=False}，因此整个修改逻辑运行在显式事务下。后端用 \texttt{try / except} 包裹宠物更新、子表删除与子表新增；只有三步都成功时才执行 \texttt{commit}，如果任意一步报错则执行 \texttt{rollback}。
+\begin{lstlisting}[language=Python,caption={app.py 中宠物类别切换的事务性删除与补写逻辑}]
+old_category = pet_row["pet_category"]
+new_category = payload.get("pet_category") or old_category
+
+cursor.execute(
+    """
+    UPDATE pet
+    SET pet_name = COALESCE(%s, pet_name),
+        pet_sex = %s,
+        pet_birthday = COALESCE(%s, pet_birthday),
+        pet_category = %s
+    WHERE pet_id = %s
+      AND owner_id = %s
+    """,
+    (
+        payload.get("pet_name"),
+        payload.get("pet_sex"),
+        payload.get("pet_birthday"),
+        new_category,
+        pet_id,
+        owner_id,
+    ),
+)
+
+if new_category != old_category:
+    if new_category == "猫":
+        cursor.execute("DELETE FROM dog WHERE pet_id = %s", (pet_id,))
+        cursor.execute(
+            """
+            INSERT INTO cat(pet_id, cat_claw_cycle, cat_litter)
+            VALUES(%s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                cat_claw_cycle = VALUES(cat_claw_cycle),
+                cat_litter = VALUES(cat_litter)
+            """,
+            (pet_id, payload.get("cat_claw_cycle") or 14, payload.get("cat_litter")),
+        )
+    else:
+        cursor.execute("DELETE FROM cat WHERE pet_id = %s", (pet_id,))
+        cursor.execute(
+            """
+            INSERT INTO dog(pet_id, dog_walk_level, dog_license_no)
+            VALUES(%s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                dog_walk_level = VALUES(dog_walk_level),
+                dog_license_no = VALUES(dog_license_no)
+            """,
+            (pet_id, payload.get("dog_walk_level"), payload.get("dog_license_no")),
+        )
+\end{lstlisting}
+
+\assetplaceholder{assets/delete-app-code.png}{图 7 宠物类别切换相关的应用层代码截图}
+
+\assetplaceholder{assets/delete-sql-code.png}{图 8 删除旧子表记录和插入新子表记录的 SQL 截图}
+
+\subsection{程序演示说明（4分）}
+
+\begin{tabularx}{\linewidth}{XX}
+\assetplaceholder{assets/before_update_UI.png}{图 9 宠物类别切换前的界面截图}
+&
+\assetplaceholder{assets/before_update_sql.png}{图 10 宠物类别切换前的数据库记录截图}
+\end{tabularx}
+
+\smallgap
+\begin{tabularx}{\linewidth}{XX}
+\assetplaceholder{assets/after_update_UI.png}{图 11 宠物类别切换后的界面截图}
+&
+\assetplaceholder{assets/after_update_sql.png}{图 12 宠物类别切换后的数据库记录截图}
+\end{tabularx}
+
+\section{触发器控制下的添加操作（20分）}
+
+\subsection{评分点对应}
+本节按要求覆盖功能描述、触发器描述、涉及表、输入数据规则、关键代码以及程序演示。为了体现工作量，本节选择代表事件：一个合法插入、一个类型不匹配的非法插入，用来展示触发器的边界。
+
+\subsection{选取的代表场景}
+本系统把新增喂药计划作为触发器控制下的添加操作。对应数据表为 \texttt{medicine\_plan}，数据库中定义了 \texttt{trigger\_medicine\_plan\_check\_insert}。该触发器在插入前检查宠物类别与药物适用类别是否一致，不一致时直接拒绝插入。
+
+\subsection{功能描述（1分）}
+该操作所要完成的功能是：向 \texttt{medicine\_plan} 表中新增一条喂药计划，并在插入阶段由数据库自动验证“这只宠物能否使用该药物”。
+
+\subsection{触发器功能描述（2分）}
+该触发器在 \texttt{before insert} 阶段分别查询新计划中对应宠物的 \texttt{pet\_category} 和药物的 \texttt{medicine\_category}。如果宠物不存在、药物不存在，或者两者类别不匹配，触发器会通过 \texttt{signal sqlstate '45000'} 主动抛出错误并终止插入。
+
+\subsection{涉及的表与输入数据规则（3分）}
+\textbf{涉及的表：} \texttt{medicine\_plan}、\texttt{pet}、\texttt{medicine}
+
+{\scriptsize
+\begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}p{4cm}|Y|}
+\hline
+字段 & 规则 \\
+\hline
+\texttt{plan\_id} & 主键，不能与已有计划编号重复。 \\
+\hline
+\texttt{medicine\_id} & 必须在 \texttt{medicine} 表中存在。 \\
+\hline
+\texttt{pet\_id} & 必须在 \texttt{pet} 表中存在。 \\
+\hline
+\texttt{medicine\_feed\_amount} & 必须大于 0。 \\
+\hline
+\texttt{medicine\_feed\_time} & 不能为空，表示计划执行时间。 \\
+\hline
+\texttt{medicine\_category} 与 \texttt{pet\_category} & 两者必须一致，例如猫药只能给猫使用，狗药只能给狗使用。 \\
+\hline
+\end{tabularx}
+}
+
+\subsection{代表事件 A：合法插入}
+合法插入样例如下：
+\begin{lstlisting}[language=SQL]
+INSERT INTO medicine_plan(plan_id, medicine_id, medicine_feed_amount,
+                          medicine_feed_time, pet_id)
+VALUES(10, 1, 1, '2026-06-06 08:00:00', 1);
+\end{lstlisting}
+其中 \texttt{pet\_id = 1} 对应猫类宠物，\texttt{medicine\_id = 1} 对应猫类药物，因此触发器允许插入成功。
+
+\subsection{代表事件 B：非法插入}
+故意违反规则的插入样例：
+\begin{lstlisting}[language=SQL]
+INSERT INTO medicine_plan(plan_id, medicine_id, medicine_feed_amount,
+                          medicine_feed_time, pet_id)
+VALUES(11, 3, 1, '2026-06-06 09:00:00', 1);
+\end{lstlisting}
+此时 \texttt{pet\_id = 1} 仍然是猫，但 \texttt{medicine\_id = 3} 对应狗药，因此触发器会报出“药物适用动物与宠物种类不匹配，不能添加喂药计划”。
+
+
+\subsection{关键 SQL 与程序演示（14分）}
+
+\begin{lstlisting}[language=SQL,caption={喂药计划插入触发器的核心校验逻辑}]
+create trigger trigger_medicine_plan_check_insert
+before insert on medicine_plan
+for each row
+begin
+    declare v_pet_category char(1);
+    declare v_medicine_category char(1);
+
+    select pet_category into v_pet_category
+    from pet
+    where pet_id = new.pet_id;
+
+    select medicine_category into v_medicine_category
+    from medicine
+    where medicine_id = new.medicine_id;
+
+    if v_pet_category <> v_medicine_category then
+        signal sqlstate '45000'
+        set message_text = '药物适用动物与宠物种类不匹配，不能添加喂药计划';
+    end if;
+end
+\end{lstlisting}
+
+\assetplaceholder{assets/trigger-insert-sql.png}{图 13 触发器源码截图}
+
+\assetplaceholder{assets/trigger-pass-demo.png}{图 14 合法插入成功的演示截图}
+
+\assetplaceholder{assets/trigger-fail-demo.png}{图 15 非法插入失败并报错的演示截图}
+
+\section{存储过程控制下的更新操作（18分）}
+
+\subsection{评分点对应}
+本节要求说明功能、存储过程功能、涉及的关系表、连接字段、更改字段与规则，并给出关键代码和程序演示。为体现工作量，本节选取三个代表场景：正常扣减、指定批次不存在，以及库存不足。
+
+\subsection{选取的代表场景}
+本系统把“执行喂药计划”作为存储过程控制下的更新操作。应用层通过执行计划接口调用数据库侧过程 \texttt{proc\_execute\_medicine\_plan}，执行时系统会根据计划中的喂药量扣减对应药品批次的库存数量。
+
+\subsection{功能描述（1分）}
+该操作所要完成的功能是：根据指定的喂药计划和药品批次，检查库存是否充足；如果条件满足，则扣减 \texttt{medicine\_store} 表中对应批次的剩余库存。
+
+\subsection{存储过程功能描述（1分）}
+存储过程 \texttt{proc\_execute\_medicine\_plan} 在数据库内部完成四件事：查找计划对应的药物编号和喂药量，校验计划是否属于当前主人，锁定要扣减的药物批次记录，检查剩余量是否足够，最后更新库存并提交事务。
+
+\subsection{涉及的关系表、连接字段与更改规则（5分）}
+\textbf{涉及的关系表：} \texttt{medicine\_plan}、\texttt{pet}、\texttt{medicine\_store}
+
+\textbf{表连接涉及字段：}
+\begin{enumerate}
+    \item \texttt{medicine\_plan.pet\_id = pet.pet\_id}
+    \item \texttt{medicine\_plan.medicine\_id = medicine\_store.medicine\_id}
+    \item \texttt{pet.owner\_id = medicine\_store.owner\_id}
+\end{enumerate}
+
+\textbf{更改字段及规则：}
+\begin{enumerate}
+    \item \texttt{medicine\_store.medicine\_store\_remaining\_amount} 需要被更新。
+    \item 更新规则为“当前剩余量减去计划喂药量”。
+    \item 只有在库存批次存在且剩余量大于等于喂药量时才允许执行更新。
+\end{enumerate}
+
+\subsection{代表事件 A：自动选择最早过期批次并扣减库存}
+当调用接口时，如果前端没有显式传入批次号，后端会先查询该计划所需药物的所有可用批次，按过期时间和批次号排序后选择最早可用的一条，再调用存储过程完成扣减。这说明应用层和数据库层并不是简单重复，而是各自承担了“选批次”和“做更新”的不同职责。
+
+\subsection{代表事件 B：指定批次不存在}
+如果用户传入了一个不存在的 \texttt{medicine\_batch\_no}，存储过程在读取 \texttt{medicine\_store} 时得不到结果，就会抛出“未找到对应药物库存批次”的错误，并通过异常处理器回滚事务。
+
+\subsection{代表事件 C：库存不足}
+即使批次存在，如果该批次剩余数量小于计划中的喂药量，存储过程同样会终止执行并报出“药物库存不足，无法执行喂药计划”。这样可以避免出现负库存。
+
+\subsection{关键代码与程序演示（11分）}
+存储过程的关键更新语句如下：
+\begin{lstlisting}[language=SQL,caption={执行喂药计划存储过程中的关键更新语句}]
+UPDATE medicine_store
+SET medicine_store_remaining_amount =
+    medicine_store_remaining_amount - v_feed_amount
+WHERE owner_id = p_owner_id
+  AND medicine_id = v_medicine_id
+  AND medicine_batch_no = p_medicine_batch_no;
+\end{lstlisting}
+
+在数据库层，这一过程被放在 \texttt{start transaction} 与 \texttt{commit} 之间，并通过 \texttt{for update} 锁定目标库存行；在应用层，接口使用 \texttt{cursor.callproc(...)} 调用存储过程，并在异常时统一 \texttt{rollback}。
+
+\begin{lstlisting}[language=Python,caption={app.py 中执行喂药计划的调用代码}]
+if not medicine_batch_no:
+    cursor.execute(
+        """
+        SELECT ms.medicine_batch_no
+        FROM medicine_store ms
+        JOIN medicine_plan mp
+          ON ms.medicine_id = mp.medicine_id
+        WHERE mp.plan_id = %s
+          AND ms.owner_id = %s
+          AND ms.medicine_store_remaining_amount >= mp.medicine_feed_amount
+        ORDER BY ms.medicine_store_expire_time ASC, ms.medicine_batch_no ASC
+        LIMIT 1
+        """,
+        (plan_id, owner_id),
+    )
+    batch_row = cursor.fetchone()
+    if not batch_row:
+        connection.rollback()
+        return json_response(message="没有可用药物批次可执行该计划", status=400)
+    medicine_batch_no = batch_row["medicine_batch_no"]
+
+cursor.callproc(
+    "proc_execute_medicine_plan",
+    (plan_id, owner_id, medicine_batch_no),
+)
+connection.commit()
+\end{lstlisting}
+
+\begin{lstlisting}[language=SQL,caption={执行喂药计划存储过程的事务与校验片段}]
+start transaction;
+
+select mp.medicine_id, mp.medicine_feed_amount
+into v_medicine_id, v_feed_amount
+from medicine_plan mp
+join pet p on mp.pet_id = p.pet_id
+where mp.plan_id = p_plan_id
+  and p.owner_id = p_owner_id
+limit 1;
+
+select medicine_store_remaining_amount
+into v_remaining_amount
+from medicine_store
+where owner_id = p_owner_id
+  and medicine_id = v_medicine_id
+  and medicine_batch_no = p_medicine_batch_no
+for update;
+\end{lstlisting}
+
+\assetplaceholder{assets/proc-update-app-code.png}{图 16 应用层调用存储过程的代码截图}
+
+\assetplaceholder{assets/proc-create-sql.png}{图 17 存储过程的 SQL 截图}
+
+\assetplaceholder{assets/proc-exec-sql.png}{图 18 库存扣减之前的演示截图}
+
+\assetplaceholder{assets/proc-pass-demo.png}{图 19 库存扣减成功的演示截图}
+
+\assetplaceholder{assets/proc-fail-demo.png}{图 20 库存不足时的演示截图}
+
+\section{含有视图的查询操作（15分）}
+
+\subsection{评分点对应}
+本节要求说明查询功能、视图功能、涉及的关系表、连接字段、创建视图代码和查询代码，并给出演示过程。为了体现工作量，本节不只展示一个查询，而是选取三个具有代表性的视图查询场景。
+
+\subsection{视图总体设计}
+数据库中共定义了 4 个主要视图：
+\begin{enumerate}
+    \item \texttt{v\_owner\_pet\_detail}：查看某个主人名下全部宠物；
+    \item \texttt{v\_food\_store\_detail}：查看食品库存及过期情况；
+    \item \texttt{v\_medicine\_store\_detail}：查看药品库存及过期情况；
+    \item \texttt{v\_pet\_medicine\_plan\_detail}：联合查看宠物、主人、药品和库存信息。
+\end{enumerate}
+这些视图把多表连接逻辑提前封装好，使应用层在查询时可以直接围绕业务对象写条件，而不用每次都重新拼接长 SQL。
+
+\subsection{代表查询 A：查看某个主人的全部宠物}
+\textbf{操作功能描述：} 查询某个主人名下的全部宠物，并同时看到猫或狗对应的扩展属性。
+
+\textbf{视图功能描述：} \texttt{v\_owner\_pet\_detail} 把 \texttt{owner\_table}、\texttt{pet}、\texttt{cat}、\texttt{dog} 连接到一起，适合页面展示宠物总览。
+
+\textbf{涉及的关系表：} \texttt{owner\_table}、\texttt{pet}、\texttt{cat}、\texttt{dog}
+
+\textbf{表连接字段：}
+\begin{enumerate}
+    \item \texttt{owner\_table.owner\_id = pet.owner\_id}
+    \item \texttt{pet.pet\_id = cat.pet\_id}
+    \item \texttt{pet.pet\_id = dog.pet\_id}
+\end{enumerate}
+
+\subsection{代表查询 B：查看药物库存及即将过期记录}
+\textbf{操作功能描述：} 查询某个主人当前的全部药品库存，并能进一步筛选已经过期或即将过期的记录。
+
+\textbf{视图功能描述：} \texttt{v\_medicine\_store\_detail} 连接主人、药品、药品厂商和药品库存，适合库存列表和过期提醒页面。
+
+\textbf{涉及的关系表：} \texttt{medicine\_store}、\texttt{owner\_table}、\texttt{medicine}、\texttt{medicine\_manu}
+
+\textbf{表连接字段：}
+\begin{enumerate}
+    \item \texttt{medicine\_store.owner\_id = owner\_table.owner\_id}
+    \item \texttt{medicine\_store.medicine\_id = medicine.medicine\_id}
+    \item \texttt{medicine.medicine\_manu\_id = medicine\_manu.medicine\_manu\_id}
+\end{enumerate}
+
+\subsection{代表查询 C：查看某只宠物或某个主人的喂药计划}
+\textbf{操作功能描述：} 查询指定宠物或指定主人的全部喂药计划，并同时看到药物名称、宠物名称、总库存和最近过期时间。
+
+\textbf{视图功能描述：} \texttt{v\_pet\_medicine\_plan\_detail} 把喂药计划、宠物、主人、药物和汇总后的库存信息放在一张视图中，是本系统信息密度最高的联合视图。
+
+\textbf{涉及的关系表：} \texttt{medicine\_plan}、\texttt{pet}、\texttt{owner\_table}、\texttt{medicine}、\texttt{medicine\_store}
+
+\textbf{表连接字段：}
+\begin{enumerate}
+    \item \texttt{medicine\_plan.pet\_id = pet.pet\_id}
+    \item \texttt{pet.owner\_id = owner\_table.owner\_id}
+    \item \texttt{medicine\_plan.medicine\_id = medicine.medicine\_id}
+    \item 汇总子查询中 \texttt{stock.owner\_id = owner\_table.owner\_id}
+    \item 汇总子查询中 \texttt{stock.medicine\_id = medicine.medicine\_id}
+\end{enumerate}
+
+\subsection{创建视图与后端查询代码（6分）}
+以喂药计划视图为例，其代表性设计思路是：先连接 \texttt{medicine\_plan}、\texttt{pet}、\texttt{owner\_table} 和 \texttt{medicine}，再通过子查询聚合 \texttt{medicine\_store} 得到总库存和最近过期时间。应用层则通过 \texttt{GET /me/pets}、\texttt{GET /me/medicine-store}、\texttt{GET /me/plans} 等接口，在视图基础上追加 \texttt{owner\_id}、\texttt{pet\_id}、\texttt{before\_time} 等筛选条件。
+
+\begin{lstlisting}[language=SQL,caption={喂药计划联合视图的核心定义}]
+CREATE VIEW v_pet_medicine_plan_detail AS
+SELECT
+    mp.plan_id,
+    o.owner_id,
+    p.pet_id,
+    p.pet_name,
+    m.medicine_id,
+    m.medicine_name,
+    mp.medicine_feed_time,
+    mp.medicine_feed_amount,
+    stock.total_remaining_amount,
+    stock.nearest_expire_date
+FROM medicine_plan mp
+JOIN pet p
+    ON mp.pet_id = p.pet_id
+JOIN owner_table o
+    ON p.owner_id = o.owner_id
+JOIN medicine m
+    ON mp.medicine_id = m.medicine_id
+LEFT JOIN (
+    SELECT owner_id, medicine_id,
+           SUM(medicine_store_remaining_amount) AS total_remaining_amount,
+           MIN(medicine_store_expire_time) AS nearest_expire_date
+    FROM medicine_store
+    GROUP BY owner_id, medicine_id
+) stock
+    ON stock.owner_id = o.owner_id
+   AND stock.medicine_id = m.medicine_id;
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python,caption={app.py 中基于视图的查询逻辑}]
+sql = """
+    SELECT *
+    FROM v_pet_medicine_plan_detail
+    WHERE owner_id = %s
+"""
+params = [owner_id]
+
+if pet_id:
+    sql += " AND pet_id = %s"
+    params.append(pet_id)
+
+if before_time:
+    sql += " AND medicine_feed_time <= %s"
+    params.append(before_time)
+
+sql += " ORDER BY medicine_feed_time"
+cursor.execute(sql, tuple(params))
+rows = cursor.fetchall()
+\end{lstlisting}
+
+\assetplaceholder{assets/view-create-sql.png}{图 21 创建视图的 SQL 截图}
+
+\subsection{程序演示（4分）}
+\begin{enumerate}
+    \item 登录后查看本人全部宠物。
+    \item 查看本人药品库存，并通过日期参数筛选即将过期的记录。
+    \item 查看本人全部喂药计划， 并限定宠物与截止时间进行筛选。
+\end{enumerate}
+
+\assetplaceholder{assets/view-demo1.png}{图 23 视图查询结果演示截图  一}
+\assetplaceholder{assets/view-demo2.png}{图 24 视图查询结果演示截图二}
+\assetplaceholder{assets/view-demo3.png}{图 25 视图查询结果演示截图三}
+\assetplaceholder{assets/view-demo4.png}{图 26 视图查询结果演示截图四}
+\assetplaceholder{assets/view-demo5.png}{图 27 视图查询结果演示截图五}
+
+\section{总结}
+本次作业围绕宠物信息管理这一数据库工程，分别实现并展示了事务删除、触发器添加、存储过程更新和视图查询四类数据库应用场景。我在本次实验过程中体会到了前后端如何协同工作，也熟练掌握了 sql 语句，总体来看收获颇丰。
+\end{document}
